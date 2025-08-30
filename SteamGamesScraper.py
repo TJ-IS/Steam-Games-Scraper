@@ -100,7 +100,12 @@ def DoRequest(url, parameters=None, retryTime=5, successCount=0, errorCount=0, r
   '''
   response = None
   try:
-    response = requests.get(url=url, params=parameters, timeout=DEFAULT_TIMEOUT)
+  # 配置代理（如果需要）
+    proxies = {
+        'http': 'http://127.0.0.1:7890',
+        'https': 'http://127.0.0.1:7890'
+    }
+    response = requests.get(url=url, params=parameters, timeout=DEFAULT_TIMEOUT, proxies=proxies)
   except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError,
           requests.exceptions.Timeout, requests.exceptions.RequestException,
           SSLError) as ex:
@@ -276,18 +281,35 @@ def ParseSteamGame(app):
   return game
 
 def SaveJSON(data, filename, backup = False):
+  '''
+  Saves data to a JSON file using a safe atomic write method.
+  '''
   try:
-    if backup == True and os.path.exists(filename):
-      name, ext = os.path.splitext(filename)
-      os.replace(filename, name + '.bak')
+    # Define temporary and backup filenames
+    temp_filename = filename + ".tmp"
+    name, ext = os.path.splitext(filename)
+    backup_filename = name + '.bak'
 
-    with open(filename, 'w', encoding='utf-8') as fout:
-      fout.seek(0)
-      fout.write(json.dumps(data, indent=4, ensure_ascii=False))
-      fout.truncate()
+    # 1. Write data to a temporary file first
+    with open(temp_filename, 'w', encoding='utf-8') as fout:
+      json.dump(data, fout, indent=4, ensure_ascii=False)
+
+    # 2. If backup is requested and original file exists, create a backup
+    if backup and os.path.exists(filename):
+      os.replace(filename, backup_filename)
+      # Log(INFO, f"Backup of '{filename}' created at '{backup_filename}'") # Optional logging
+
+    # 3. Atomically replace the original file with the new temporary file
+    #    os.replace() is atomic on most modern operating systems.
+    os.replace(temp_filename, filename)
+
   except Exception as ex:
-    Log(EXCEPTION, f'An exception of type {ex} ocurred. Traceback: {traceback.format_exc()}')
+    Log(EXCEPTION, f'An exception of type {ex} occurred while saving {filename}. Traceback: {traceback.format_exc()}')
+    # If something went wrong, try to remove the temporary file if it exists
+    if os.path.exists(temp_filename):
+        os.remove(temp_filename)
     sys.exit()
+
 
 def LoadJSON(filename):
   '''

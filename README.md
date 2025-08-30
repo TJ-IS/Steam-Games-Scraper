@@ -22,7 +22,9 @@ Start generating data simply with:
 python SteamGamesScraper.py
 ```
 
-The first time, the file '_appplist.json_' will be created with all the ID that facilitates Steam (>140K). In the next execution, that file will be used instead of requesting all the data again. If you want to get new IDs, simply delete the file '_appplist.json_'.
+**NOTE: USE CTRL+C TO SAVE PERIODLY, WAIT UNTIL SAVED AND NOT CTRL+C TWICE**
+
+The first time, the file '_applist.json_' will be created with all the ID that facilitates Steam (>140K). In the next execution, that file will be used instead of requesting all the data again. If you want to get new IDs, simply delete the file '_applist.json_'.
 
 Only the data of the games are saved. DLCs, music, tools, etc. are ignored and added to the file '_discarted.json_' so as not to ask for them in future searches. You can delete the file to ask again for those IDs.
 
