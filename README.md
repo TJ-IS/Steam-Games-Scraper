@@ -7,11 +7,12 @@ I used this code to generate these dataset: '[Steam Games Dataset](https://www.k
 
 # Requisites 🔧
 
+- uv
 - Pyhton 3.8
 - requests and argparse.
 
 ```
-pip3 install requests argparse
+uv sync
 ```
 
 # Usage 🚀
@@ -19,7 +20,7 @@ pip3 install requests argparse
 Start generating data simply with:
 
 ```
-python SteamGamesScraper.py
+uv run SteamGamesScraper.py
 ```
 
 **NOTE: USE CTRL+C TO SAVE PERIODLY, WAIT UNTIL SAVED AND NOT CTRL+C TWICE**
